@@ -1,0 +1,132 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executer.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 12:02:24 by sbenitez          #+#    #+#             */
+/*   Updated: 2025/05/28 14:34:37 by sbenitez         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../inc/minishell.h"
+
+void	ft_check_exitstat(int status, t_shell *ms)
+{
+	if (WIFEXITED(status))
+		ms->exit_status = WEXITSTATUS(status) % 256;
+	else if (WIFSIGNALED(status))
+		ms->exit_status = (128 + WTERMSIG(status)) % 256;
+}
+
+void	execute_builtin(t_shell *ms, t_cmd *cmd)
+{
+	if (!cmd->args[0])
+		cmd->args[0] = ft_strdup("");
+	if (!ft_strncmp(cmd->args[0], "echo", 5))
+		ms->exit_status = exec_echo(cmd);
+	else if (!ft_strncmp(cmd->args[0], "cd", 3))
+		ms->exit_status = exec_cd(ms, cmd);
+	else if (!ft_strncmp(cmd->args[0], "pwd", 4))
+		ms->exit_status = exec_pwd();
+	else if (!ft_strncmp(cmd->args[0], "export", 7))
+		ms->exit_status = exec_export(ms, cmd);
+	else if (!ft_strncmp(cmd->args[0], "unset", 6))
+		ms->exit_status = exec_unset(ms, cmd);
+	else if (!ft_strncmp(cmd->args[0], "env", 4))
+		ms->exit_status = exec_env(ms);
+	else if (!ft_strncmp(cmd->args[0], "exit", 5))
+		exec_exit(ms, cmd);
+	else
+		return ;
+}
+
+void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms)
+{
+	if (ft_redirections(ms, cmd) == 1)
+		exit (1);
+	if (prevfd != -1)
+		dup2(prevfd, STDIN_FILENO);
+	if (cmd->next)
+		dup2(pipefd[1], STDOUT_FILENO);
+	if (prevfd != -1)
+		close(prevfd);
+	if (cmd->next)
+	{
+		close(pipefd[0]);
+		close(pipefd[1]);
+	}
+//	if (ft_redirections(ms, cmd) == 1)
+//		exit (1);
+	if (cmd->is_btn)
+	{
+		execute_builtin(ms, cmd);
+		exit(ms->last_exit_st);
+	}
+	else
+		execute_command(ms, cmd);
+	perror("Error executing\n");
+	exit (126);
+}
+
+void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2])
+{
+	int	status;
+
+	status = 0;
+	if (*prevfd != -1)
+		close(*prevfd);
+	if (ms->cmd_lst->next)
+	{
+		close(pipefd[1]);
+		*prevfd = pipefd[0];
+	}
+	else
+		*prevfd = -1;
+	g_signal_flag = 1;
+	waitpid(pid, &status, 0);
+	ft_check_exitstat(status, ms);
+}
+//LOS BUILTINS SOLO SE FORKEAN CUANDO HAY PIPELINE
+
+void	ft_exec_commands(t_shell *ms)
+{
+	pid_t	pid;
+	int		pipefd[2];
+	int		prevfd;
+	t_cmd	*cmd;
+
+	cmd = ms->cmd_lst;
+	prevfd = -1;
+	while (cmd)
+	{
+		if (cmd->is_btn && !cmd->next && (prevfd == -1))
+		{
+			execute_builtin(ms, cmd);
+			return ;
+		}
+		if (cmd->next && pipe(pipefd) == 1)
+		{
+			perror("Error creating pipe\n");
+			exit(1);
+		}
+		pid = fork();
+		if (pid == -1)
+		{
+			return (perror("Error creating child process.\n"));
+			exit(1);
+		}
+		if (pid == 0)
+			child_process(cmd, prevfd, pipefd, ms);
+		else
+		{
+			parent_process(pid, ms, &prevfd, pipefd);
+			if (cmd->is_btn && !ft_strncmp(cmd->args[0], "exit", 5))
+				exit(ms->last_exit_st);
+			cmd = cmd->next;
+		}
+		//AKI SEGURO
+	//waitpidloop
+	}
+}
