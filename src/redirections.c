@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:34:27 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 10:51:28 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 16:10:04 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	ft_redir_heredoc(t_shell *shell, t_cmd *cmd)
 			free(buffer);
 			break ;
 		}
-		buffer = ft_expand_heredoc(buffer, shell->env);
+		buffer = ft_expand_heredoc(buffer, shell->env, shell->last_exit_st);
 		write(pipefd[1], buffer, ft_strlen(buffer));
 		write(pipefd[1], "\n", 1);
 		free(buffer);

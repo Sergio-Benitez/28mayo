@@ -6,13 +6,21 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:52:12 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 10:51:47 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 16:19:57 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
 int	g_signal_flag;
+
+void	ft_check_exitstat(int status, t_shell *ms)
+{
+	if (WIFEXITED(status))
+		ms->exit_status = WEXITSTATUS(status) % 256;
+	else if (WIFSIGNALED(status))
+		ms->exit_status = (128 + WTERMSIG(status)) % 256;
+}
 
 void	ft_handle_backslash(int signum)
 {

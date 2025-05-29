@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 17:08:56 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 13:35:35 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:48:12 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ void	ft_dequotize(t_shell *shell);
 
 // EXECUTER.C
 
-void	ft_check_exitstat(int status, t_shell *ms);
 void	execute_builtin(t_shell *ms, t_cmd *cmd);
 void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms);
 void	parent_process(t_shell *ms, int *prevfd, int pipefd[2]);
@@ -169,6 +168,7 @@ void	ft_process_heredoc(t_cmd *cmd, t_token *token);
 
 // SIGNALS.C
 
+void	ft_check_exitstat(int status, t_shell *ms);
 void	ft_handle_backslash(int signum);
 void	ft_handle_sigint(int signum);
 void	ft_setup_signals(void);
@@ -210,9 +210,9 @@ int		ft_redirections(t_shell *shell, t_cmd *cmd);
 
 // HEREDOC_UTILS.C
 
-char	*ft_expand_variable(int *i, char *buffer, char **env);
+char	*ft_expand_variable(int *i, char *buffer, char **env, int exit_st);
 char	*ft_not_expand(int *i, char *buffer);
-char	*ft_expand_heredoc(char *buffer, char **env);
+char	*ft_expand_heredoc(char *buffer, char **env, int exit_st);
 
 // EXEC_PWD.C
 

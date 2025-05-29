@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 17:52:30 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/27 13:11:29 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:22:03 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	ft_fill_cmd(t_shell *shell, t_token *token, t_token **next_token)
 	while (temp->next)
 		temp = temp->next;
 	if (!temp->args)
-		temp->args = ft_calloc(sizeof(char *), (ft_count_args(token) + 1));
+		temp->args = ft_calloc((ft_count_args(token) + 2), sizeof(char *));
 	else
 		while (temp->args[i])
 			i++;

@@ -6,19 +6,11 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:02:24 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 13:45:32 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 16:19:29 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-void	ft_check_exitstat(int status, t_shell *ms)
-{
-	if (WIFEXITED(status))
-		ms->exit_status = WEXITSTATUS(status) % 256;
-	else if (WIFSIGNALED(status))
-		ms->exit_status = (128 + WTERMSIG(status)) % 256;
-}
 
 void	execute_builtin(t_shell *ms, t_cmd *cmd)
 {
@@ -92,8 +84,8 @@ void	parent_process(t_shell *ms, int *prevfd, int pipefd[2])
 
 void	ft_wait_all_processes(pid_t *pids, t_shell *ms)
 {
-	int	status;
-	int	i;
+	int		status;
+	int		i;
 	t_cmd	*cmd;
 
 	i = 0;

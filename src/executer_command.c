@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:28:22 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 14:06:07 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:11:16 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	execute_command(t_shell *shell, t_cmd *cmd)
 	}
 	execve(path, cmd->args, env);
 	perror("Error executing.\n");
-	while (cmd->args[i])
+	while (cmd->args && cmd->args[i])
 		free(cmd->args[i++]);
 	free(cmd->args);
 	free(path);
