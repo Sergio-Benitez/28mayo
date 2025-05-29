@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:28:22 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/27 13:14:00 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 14:06:07 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	execute_command(t_shell *shell, t_cmd *cmd)
 	}
 	while (env[i] && ft_strnstr(env[i], "PATH", 4) == 0)
 		i++;
-	if (!(env[i]))
+	if (!ft_strchr(cmd->args[0], '/') && !(env[i]))
 	{
 		ft_putstr_fd("No PATH found\n", 2);
 		exit (127);
