@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:02:24 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 12:16:48 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 13:45:32 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms)
 	if (cmd->is_btn)
 	{
 		execute_builtin(ms, cmd);
-		exit(ms->last_exit_st);
+		exit(ms->exit_status);
 	}
 	else
 		execute_command(ms, cmd);
@@ -70,11 +70,11 @@ void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms)
 	exit (126);
 }
 
-void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2])
+void	parent_process(t_shell *ms, int *prevfd, int pipefd[2])
 {
-	int	status;
+/* 	int	status;
 
-	status = 0;
+	status = 0; */
 	if (*prevfd != -1)
 		close(*prevfd);
 	if (ms->cmd_lst->next)
@@ -85,46 +85,40 @@ void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2])
 	else
 		*prevfd = -1;
 	g_signal_flag = 1;
-	waitpid(pid, &status, 0);
-	ft_check_exitstat(status, ms);
+	//waitpid(pid, &status, 0);
+	//ft_check_exitstat(status, ms);
 }
 //LOS BUILTINS SOLO SE FORKEAN CUANDO HAY PIPELINE
 
-pid_t	ft_execute(t_shell *ms, int prevfd, int *pipefd)
+void	ft_wait_all_processes(pid_t *pids, t_shell *ms)
 {
-	pid_t	pid;
+	int	status;
+	int	i;
 	t_cmd	*cmd;
 
+	i = 0;
 	cmd = ms->cmd_lst;
-	prevfd = -1;
-	pid = fork();
-	if (pid == -1)
+	while (cmd)
 	{
-		perror("Error creating child process.\n");
-		exit(1);
+		waitpid(pids[i], &status, 0);
+		i++;
+		if (!cmd->next)
+			ft_check_exitstat(status, ms);
+		cmd = cmd->next;
 	}
-	if (pid == 0)
-		child_process(cmd, prevfd, pipefd, ms);
-	else
-	{
-		parent_process(pid, ms, &prevfd, pipefd);
-		if (cmd->is_btn && !ft_strncmp(cmd->args[0], "exit", 5))
-			exit(ms->last_exit_st);
-	}
-	return (pid);
 }
 
 void	ft_exec_commands(t_shell *ms)
 {
-	pid_t	pids[99];
 	int		pipefd[2];
 	int		prevfd;
-	int		i[2];
 	t_cmd	*cmd;
+	pid_t	pids[99];
+	int		i;
 
+	i = 0;
 	cmd = ms->cmd_lst;
 	prevfd = -1;
-	i[0] = 0;
 	while (cmd)
 	{
 		if (cmd->is_btn && !cmd->next && (prevfd == -1))
@@ -137,11 +131,24 @@ void	ft_exec_commands(t_shell *ms)
 			perror("Error creating pipe\n");
 			exit(1);
 		}
-		pids[i[0]++] = ft_execute(ms, prevfd, pipefd);
-		cmd = cmd->next;
+		pids[i] = fork();
+		if (pids[i] == -1)
+		{
+			return (perror("Error creating child process.\n"));
+			exit(1);
+		}
+		if (pids[i] == 0)
+			child_process(cmd, prevfd, pipefd, ms);
+		else
+		{
+			parent_process(ms, &prevfd, pipefd);
+			if (cmd->is_btn && !ft_strncmp(cmd->args[0], "exit", 5))
+				exit(ms->exit_status);
+			cmd = cmd->next;
+		}
+		//AKI SEGURO
+	//waitpidloop
+		i++;
 	}
-	i[1] = 0;
-	while (i[1] < i[0])
-		if (pids[i[1]] != -1)
-			waitpid(pids[i[1]++], &ms->exit_status, 0);
+	ft_wait_all_processes(pids, ms);
 }

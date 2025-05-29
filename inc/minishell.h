@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 17:08:56 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/29 10:56:15 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 13:35:35 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ void	ft_dequotize(t_shell *shell);
 void	ft_check_exitstat(int status, t_shell *ms);
 void	execute_builtin(t_shell *ms, t_cmd *cmd);
 void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms);
-void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2]);
+void	parent_process(t_shell *ms, int *prevfd, int pipefd[2]);
+void	ft_wait_all_processes(pid_t *pids, t_shell *ms);
 void	ft_exec_commands(t_shell *ms);
 
 // EXPAND_EXITSTATUS.C
