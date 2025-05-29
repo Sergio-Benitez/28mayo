@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:02:24 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/28 14:34:37 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 12:16:48 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,15 +90,41 @@ void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2])
 }
 //LOS BUILTINS SOLO SE FORKEAN CUANDO HAY PIPELINE
 
-void	ft_exec_commands(t_shell *ms)
+pid_t	ft_execute(t_shell *ms, int prevfd, int *pipefd)
 {
 	pid_t	pid;
-	int		pipefd[2];
-	int		prevfd;
 	t_cmd	*cmd;
 
 	cmd = ms->cmd_lst;
 	prevfd = -1;
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("Error creating child process.\n");
+		exit(1);
+	}
+	if (pid == 0)
+		child_process(cmd, prevfd, pipefd, ms);
+	else
+	{
+		parent_process(pid, ms, &prevfd, pipefd);
+		if (cmd->is_btn && !ft_strncmp(cmd->args[0], "exit", 5))
+			exit(ms->last_exit_st);
+	}
+	return (pid);
+}
+
+void	ft_exec_commands(t_shell *ms)
+{
+	pid_t	pids[99];
+	int		pipefd[2];
+	int		prevfd;
+	int		i[2];
+	t_cmd	*cmd;
+
+	cmd = ms->cmd_lst;
+	prevfd = -1;
+	i[0] = 0;
 	while (cmd)
 	{
 		if (cmd->is_btn && !cmd->next && (prevfd == -1))
@@ -111,22 +137,11 @@ void	ft_exec_commands(t_shell *ms)
 			perror("Error creating pipe\n");
 			exit(1);
 		}
-		pid = fork();
-		if (pid == -1)
-		{
-			return (perror("Error creating child process.\n"));
-			exit(1);
-		}
-		if (pid == 0)
-			child_process(cmd, prevfd, pipefd, ms);
-		else
-		{
-			parent_process(pid, ms, &prevfd, pipefd);
-			if (cmd->is_btn && !ft_strncmp(cmd->args[0], "exit", 5))
-				exit(ms->last_exit_st);
-			cmd = cmd->next;
-		}
-		//AKI SEGURO
-	//waitpidloop
+		pids[i[0]++] = ft_execute(ms, prevfd, pipefd);
+		cmd = cmd->next;
 	}
+	i[1] = 0;
+	while (i[1] < i[0])
+		if (pids[i[1]] != -1)
+			waitpid(pids[i[1]++], &ms->exit_status, 0);
 }

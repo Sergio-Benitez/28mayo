@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:34:27 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/28 13:52:27 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:51:28 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ int	ft_redir_outfile(char *outfile, int append)
 
 int	ft_redirections(t_shell *shell, t_cmd *cmd)
 {
-	
 	if (cmd->hd && ft_redir_heredoc(shell, cmd))
 		return (1);
 	if (!cmd->hd && cmd->infile && ft_redir_infile(cmd->infile))

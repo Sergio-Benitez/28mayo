@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 17:52:12 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/28 14:22:44 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:51:47 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_handle_sigint(int signum)
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
-		rl_redisplay();	
+		rl_redisplay();
 	}
 	else if (g_signal_flag == 1)
 	{

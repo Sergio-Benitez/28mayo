@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 18:16:26 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/27 12:32:27 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:50:18 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,9 @@ void	ft_insert_exp(t_xpnd *xpnd, t_token *t)
 void	ft_expand_token(t_shell *shell, t_token *token)
 {
 	t_xpnd	*xpnd;
-	int		i;
 
 	xpnd = ft_init_expand();
-	i = 0;
-	while (token->tkn[i] && ft_strchr(token->tkn, '$')
+	while (token->tkn[0] && ft_strchr(token->tkn, '$')
 		&& token->tkn[ft_intstrchr(token->tkn, '$')] != ' '
 		&& token->tkn[ft_intstrchr(token->tkn, '$')] != '\"')
 	{
@@ -99,8 +97,6 @@ void	ft_expand_token(t_shell *shell, t_token *token)
 		if (!xpnd->value)
 			xpnd->value = ft_strdup("");
 		ft_insert_exp(xpnd, token);
-		i = -1;
-		i++;
 	}
 	ft_free_expand(xpnd);
 }

@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:23:11 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/27 12:24:25 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:17:34 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int	ft_search_env(char **env, char *str)
 	while (env && env[i])
 	{
 		if (!ft_strncmp(env[i], str, ft_strlen(str))
-			&& (env[i][ft_strlen(str)] == '=' || env[i][ft_strlen(str)] == '\0'))
+			&& (env[i][ft_strlen(str)] == '='
+			|| env[i][ft_strlen(str)] == '\0'))
 			return (i);
 		i++;
 	}

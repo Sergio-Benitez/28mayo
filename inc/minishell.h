@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 17:08:56 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/28 12:51:12 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:56:15 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,11 @@ typedef struct s_token
 
 typedef struct s_cmd
 {
-	char			**args; // List args del cmd, cmd[0] = cmd
+	char			**args;
 	char			*infile;
-	char			*delimiter; // caracter delimitador para heredoc <<
+	char			*delimiter;
 	char			*outfile;
-	bool			append; // hay que apendear cuando sea >>
+	bool			append;
 	bool			hd;
 	bool			is_btn;
 	int				exit_status;
@@ -106,10 +106,19 @@ int		ft_has_commands(t_shell *shell);
 char	*ft_remove_quotes(char *tkn);
 void	ft_dequotize(t_shell *shell);
 
+// EXECUTER.C
+
+void	ft_check_exitstat(int status, t_shell *ms);
+void	execute_builtin(t_shell *ms, t_cmd *cmd);
+void	child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms);
+void	parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2]);
+void	ft_exec_commands(t_shell *ms);
+
 // EXPAND_EXITSTATUS.C
 
 char	*ft_middle_case(char *token, char *dollar_pos, char *status_str);
 void	ft_replace_start(char **token, char *status_str, char *dollar_pos);
+void	ft_process_dollarquest(t_token *token, char *dollar_pos, char *sts_str);
 void	ft_expand_exitstatus(t_shell *shell, t_token *token);
 
 // EXPAND_UTILS.C //
@@ -163,14 +172,6 @@ void	ft_handle_backslash(int signum);
 void	ft_handle_sigint(int signum);
 void	ft_setup_signals(void);
 
-// UTILS.C //
-
-void	ft_exit_error(char *error);
-void	*safe_malloc(size_t bytes);
-void	ft_print_tokens(t_token *token);
-char	**ft_copy_env(char **env);
-void	ft_print_cmdlst(t_cmd *cmd_lst);
-
 // TKNIZE_QUOTES.C //
 
 void	ft_closed_error(char *s);
@@ -185,13 +186,13 @@ void	ft_redir_tkn(t_shell *shell, int *i);
 void	ft_word_tkn(t_shell *shell, int *i);
 void	ft_tokenize(t_shell *shell);
 
-// EXECUTER.C
+// UTILS.C //
 
-void    ft_check_exitstat(int status, t_shell *ms);
-void	execute_builtin(t_shell *ms, t_cmd *cmd);
-void    child_process(t_cmd *cmd, int prevfd, int pipefd[2], t_shell *ms);
-void    parent_process(pid_t pid, t_shell *ms, int *prevfd, int pipefd[2]);
-void    ft_exec_commands(t_shell *ms);
+void	ft_exit_error(char *error);
+void	*safe_malloc(size_t bytes);
+void	ft_print_tokens(t_token *token);
+char	**ft_copy_env(char **env);
+void	ft_print_cmdlst(t_cmd *cmd_lst);
 
 // EXECUTER_COMMAND.C
 
@@ -202,8 +203,8 @@ void	execute_command(t_shell *shell, t_cmd *cmd);
 // REDIRECTIONS.C
 
 int		ft_redir_heredoc(t_shell *shell, t_cmd *cmd);
-int 	ft_redir_infile(char *infile);
-int 	ft_redir_outfile(char *outfile, int append);
+int		ft_redir_infile(char *infile);
+int		ft_redir_outfile(char *outfile, int append);
 int		ft_redirections(t_shell *shell, t_cmd *cmd);
 
 // HEREDOC_UTILS.C
@@ -214,7 +215,7 @@ char	*ft_expand_heredoc(char *buffer, char **env);
 
 // EXEC_PWD.C
 
-int 	exec_pwd(void);
+int		exec_pwd(void);
 
 // EXEC_EXIT.X
 

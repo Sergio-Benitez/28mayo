@@ -6,7 +6,7 @@
 /*   By: sbenitez <sbenitez@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:04:06 by sbenitez          #+#    #+#             */
-/*   Updated: 2025/05/28 14:32:53 by sbenitez         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:16:15 by sbenitez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	cd_home(t_shell *shell)
 	}
 	oldpwd = getcwd(NULL, 0);
 	if (chdir(home) < 0)
-		return(ft_check_home_error(shell, home, oldpwd));
+		return (ft_check_home_error(shell, home, oldpwd));
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 		pwd = ft_strdup(home);
